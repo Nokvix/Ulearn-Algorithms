@@ -1,55 +1,30 @@
-class Node:
-    def __init__(self, value):
-        self.next = None
-        self.value = value
+from collections import deque
 
 
 class Queue:
     def __init__(self):
-        self.counter = 0
-        self.head = None
+        self.queue = deque()
 
     def push(self, number):
-        node = Node(number)
-
-        if self.head is None:
-            self.head = node
-        else:
-            self.head.next = node
-        self.counter += 1
+        self.queue.append(number)
         return 'ok'
 
     def pop(self):
-        if self.head.next is None:
-            value = self.head.value
-            self.head = None
-        else:
-            value = self.head.value
-            self.head = self.head.next
-
-        self.counter -= 1
-        return value
+        return self.queue.popleft()
 
     def front(self):
-        return self.head.value
+        value = self.queue.popleft()
+        self.queue.appendleft(value)
+        return value
 
     def size(self):
-        return self.counter
+        return len(self.queue)
 
     def view(self):
-        string = ''
-        node = self.head
-        if node is None:
-            return string
-        while True:
-            if node.next is None:
-                string += node.value
-                return string
-            else:
-                string += f"{node.value}, "
+        return ', '.join(map(str, list(self.queue)))
 
     def clear(self):
-        self.head = None
+        self.queue.clear()
         return 'ok'
 
     def exit(self):
