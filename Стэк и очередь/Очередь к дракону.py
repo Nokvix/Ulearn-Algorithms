@@ -12,26 +12,28 @@ class Queue:
         self.start = None
         self.count = 0
 
+    def _push_if_none(self, knight):
+        self.start = knight
+        self.middle = knight
+        self.end = knight
+
     def push_end(self, number):
         new_knight = Knight(number)
         if self.start is None:
-            self.start = new_knight
-            self.middle = new_knight
+            self._push_if_none(new_knight)
         else:
             self.end.back = new_knight
             new_knight.front = self.end
             if self.count % 2 == 1:
                 self.middle = self.middle.back
+            self.end = new_knight
 
-        self.end = new_knight
         self.count += 1
 
     def push_middle(self, number):
         new_knight = Knight(number)
         if self.start is None:
-            self.start = new_knight
-            self.middle = new_knight
-            self.end = new_knight
+            self._push_if_none(new_knight)
         elif self.count % 2 == 1:
             prev = self.middle.back
 
@@ -63,9 +65,7 @@ class Queue:
     def push_start(self, number):
         new_knight = Knight(number)
         if self.start is None:
-            self.start = new_knight
-            self.middle = new_knight
-            self.end = new_knight
+            self._push_if_none(new_knight)
         else:
             new_knight.back = self.start
             self.start.front = new_knight
