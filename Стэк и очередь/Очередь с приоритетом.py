@@ -1,63 +1,60 @@
-import heapq
-
-
 class PriorityQueue:
     def __init__(self):
-        self.queue = []
+        self.queue = dict()
+        self.importance_list = []
         self.count = 0
+        self.is_sorted = False
 
     def push(self, value, prior):
-        heapq.heappush(self.queue, (-prior, value))
+        if prior in self.queue:
+            self.queue[prior].append(value)
+        else:
+            self.queue[prior] = [value]
+        self.importance_list.append(prior)
         self.count += 1
-        return 'ok'
+        self.is_sorted = False
 
     def pop_top(self):
         if self.count > 0:
+            if not self.is_sorted:
+                self.importance_list.sort()
+                self.is_sorted = True
+            pop_prior = self.importance_list.pop()
+            value = self.queue[pop_prior].pop(0)
             self.count -= 1
-            return heapq.heappop(self.queue)[1]
-        return '-1'
+            return value
+        return -1
 
     def size(self):
         return self.count
 
     def clear(self):
-        self.queue = []
+        self.queue = dict()
+        self.importance_list = []
         self.count = 0
-        return 'ok'
-
-    def exit(self):
-        return 'bye'
 
     def pop_all_k(self, prior):
-        res = []
-        while self.count > 0 and self.queue and self.queue[0][0] <= -prior:
-            elem = self.queue[0]
-            if elem[0] == -prior:
-                res.append(str(heapq.heappop(self.queue)[1]))
-                self.count -= 1
-            elif elem[0] > -prior:
-                break
+        if prior not in self.queue:
+            return -1
+        res = self.queue[prior]
+        self.queue[prior] = []
+        self.count -= len(res)
+        self.importance_list = list(filter(lambda x: x != prior, self.importance_list))
 
-        if len(res) > 0:
-            return ' '.join(res)
-        return '-1'
+        return ' '.join(list(map(str, res))) if len(res) > 0 else -1
 
     def pop_k(self, prior):
-        for elem in self.queue:
-            if elem[0] == -prior:
-                return_val = elem[1]
-                self.count -= 1
-                self.queue.remove(elem)
-                return return_val
-            elif elem[0] > -prior:
-                return '-1'
+        if prior in self.queue and len(self.queue[prior]) > 0:
+            value = self.queue[prior].pop(0)
+            self.importance_list.remove(prior)
+            self.count -= 1
+            return value
         else:
-            return '-1'
+            return -1
 
 
 def main():
     queue = PriorityQueue()
-    output = []
     commands = []
 
     while True:
@@ -67,23 +64,23 @@ def main():
         match command[0]:
             case 'push':
                 i, k = map(int, command[1:])
-                output.append(queue.push(i, k))
+                queue.push(i, k)
+                print('ok')
             case 'pop':
                 if command[1] == 'top':
-                    output.append(str(queue.pop_top()))
+                    print(queue.pop_top())
                 else:
-                    output.append(str(queue.pop_k(int(command[1]))))
+                    print(queue.pop_k(int(command[1])))
             case 'popall':
-                output.append(queue.pop_all_k(int(command[1])))
+                print(queue.pop_all_k(int(command[1])))
             case 'size':
-                output.append(str(queue.size()))
+                print(str(queue.size()))
             case 'clear':
-                output.append(queue.clear())
+                queue.clear()
+                print('ok')
             case 'exit':
-                output.append(queue.exit())
+                print('bye')
                 break
-
-    print('\n'.join(output))
 
 
 main()
