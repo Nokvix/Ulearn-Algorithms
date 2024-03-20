@@ -1,4 +1,5 @@
-abc = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+abc = [chr(code) for code in range(ord('а'), ord('а') + 32)]
+print(abc)
 weights_dict = dict()
 freq_dict = dict()
 outermost_part = []
