@@ -10,7 +10,7 @@ def insertion_sorting():
                 break
         else:
             numbers.insert(i, number)
-        if i == len_numbers // 2 - (1 - len_numbers % 2):
+        if len_numbers % 2 == 0 and i == len_numbers // 2 - 1 or len_numbers % 2 == 1 and i == len_numbers // 2:
             print(' '.join(list(map(str, numbers))))
     print(' '.join(list(map(str, numbers))))
 
