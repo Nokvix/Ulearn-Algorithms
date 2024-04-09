@@ -40,8 +40,6 @@ def find_kth_stat(numbers, k):
 
 
 def main():
-    # numbers = list(map(int, '6 0 2'.split()))
-    # k = int('1')
     numbers = list(map(int, input().split()))
     k = int(input())
     kth = find_kth_stat(numbers, k)
@@ -49,15 +47,3 @@ def main():
 
 
 main()
-
-# numbers = input()
-# k = input()
-#
-# if numbers == '2 4 8 3' and k == '1':
-#     print(3)
-# elif numbers == '1' and k == '0':
-#     print(1)
-# elif numbers == '5 2' and k == '1':
-#     print(5)
-# else:
-#     print(f"num: {numbers}, k: {k}")
