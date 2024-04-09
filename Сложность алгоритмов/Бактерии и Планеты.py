@@ -1,13 +1,13 @@
 def surviving_bacteria_on_planet(bacterial_temperatures, planetary_temperatures):
     surviving_dict = {}
-    for planet_temp in planetary_temperatures:
-        if planet_temp not in surviving_dict:
-            surviving_dict[planet_temp] = 0
+
+    for i in range(len(planetary_temperatures)):
+        surviving_dict[(planetary_temperatures[i], i)] = 0
 
     for min_temp, max_temp in bacterial_temperatures:
-        for planet_temp in planetary_temperatures:
-            if min_temp <= planet_temp <= max_temp:
-                surviving_dict[planet_temp] += 1
+        for i in range(len(planetary_temperatures)):
+            if min_temp <= planetary_temperatures[i] <= max_temp:
+                surviving_dict[(planetary_temperatures[i], i)] += 1
 
     return surviving_dict
 
@@ -22,8 +22,8 @@ def main():
 
     surviving_dict = surviving_bacteria_on_planet(bacterial_temperatures, planetary_temperatures)
 
-    for planet_temp in surviving_dict:
-        print(surviving_dict[planet_temp])
+    for i in range(len(planetary_temperatures)):
+        print(surviving_dict[(planetary_temperatures[i], i)])
 
 
 main()
