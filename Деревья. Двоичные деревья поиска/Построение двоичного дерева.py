@@ -26,44 +26,66 @@ class Tree:
             self._add(node.right, value)
 
     def add(self, value):
-        if self.root is None:
-            self.root = Node(value, None)
-            return
+        if not isinstance(value, list):
+            if self.root is None:
+                self.root = Node(value, None)
+                return
 
-        self._add(self.root, value)
+            self._add(self.root, value)
+        else:
+            self.root = self.add_from_list(value)
 
-    def add_from_list(self, numbers, tree):
+    def add_from_list(self, numbers):
         list_numbers_length = len(numbers)
         if list_numbers_length == 0:
             return
         if list_numbers_length == 1:
-            tree.add(numbers[0])
-            return
+            return Node(numbers[0], None)
 
         middle = list_numbers_length // 2
         if list_numbers_length % 2 == 0:
             middle -= 1
-        value = numbers[middle]
-        tree.add(value)
+        node = Node(numbers[middle], None)
+        node.left = self.add_from_list(numbers[:middle])
+        node.right = self.add_from_list(numbers[middle + 1:])
+        if node.left:
+            node.left.parent = node
+        if node.right:
+            node.right.parent = node
 
-        self.add_from_list(numbers[:middle], tree)
-        self.add_from_list(numbers[middle + 1:], tree)
+        return node
 
-    def _print_tree(self, node, prefix=[], is_left=True):
-        if node:
-            self._print_tree(node.right, prefix + ["│   " if is_left else "    "], False)
-            print("".join(prefix) + ("└─── " if is_left else "├─── ") + str(node.value))
-            self._print_tree(node.left, prefix + ["    " if is_left else "│   "], True)
+    def _print_tree(self, node, cur_res, bool_list, depth, is_left):
+        if not node:
+            return
 
-    def print_tree(self):
-        self._print_tree(self.root)
+        if depth + 1 == len(bool_list):
+            bool_list.append(True)
+
+        string = ''.join(['│   ' if bool_res else '    ' for bool_res in bool_list[:depth]])
+        string += '├───' if (is_left and node.parent.right) else '└───'
+        string += str(node.value)
+        cur_res.append(string)
+
+        bool_list[depth + 1] = node.right is not None
+        self._print_tree(node.left, cur_res, bool_list, depth + 1, True)
+        bool_list[depth + 1] = False
+        self._print_tree(node.right, cur_res, bool_list, depth + 1, False)
+
+    def __str__(self):
+        cur_res = [str(self.root.value)]
+        bool_list = [True]
+        self._print_tree(self.root.left, cur_res, bool_list, 0, True)
+        bool_list[0] = False
+        self._print_tree(self.root.right, cur_res, bool_list, 0, False)
+        return '\n'.join(cur_res)
 
 
 def main():
     numbers = list(map(int, input().split()))
     tree = Tree()
-    tree.add_from_list(numbers, tree)
-    tree.print_tree()
+    tree.add(numbers)
+    print(tree)
 
 
 main()
