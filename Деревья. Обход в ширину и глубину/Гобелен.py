@@ -1,12 +1,9 @@
-# В некоторых местах сделана операция взятия остатка (%), тк могут передаваться номера вершин от 0 до n включительно.
-# Чтобы не выходить за границы списка, пришлось использовать такой костыль :(
-
 n = int(input())
-neighbours_list = [None] * n
-depth_list = [-1] * n
+neighbours_list = [None] * (n + 1)
+depth_list = [-1] * (n + 1)
 entrances = []
-first_entrances = [-1] * n
-last_entrances = [-1] * n
+first_entrances = [-1] * (n + 1)
+last_entrances = [-1] * (n + 1)
 
 
 def fill_in_lists(tree_dict, vertex, parent, depth):
@@ -14,14 +11,13 @@ def fill_in_lists(tree_dict, vertex, parent, depth):
         return
     global neighbours_list, depth_list, n
 
-    vertex_module = vertex % n
-    depth_list[vertex_module] = depth
+    depth_list[vertex] = depth
     if vertex in tree_dict:
-        neighbours_list[vertex_module] = tree_dict[vertex]
+        neighbours_list[vertex] = tree_dict[vertex]
         if parent:
-            neighbours_list[vertex_module].append(parent)
+            neighbours_list[vertex].append(parent)
     else:
-        neighbours_list[vertex_module] = [parent]
+        neighbours_list[vertex] = [parent]
         return
 
     for child in tree_dict[vertex]:
@@ -33,13 +29,11 @@ def fill_in_lists(tree_dict, vertex, parent, depth):
 def dfs(x, parent=None):
     global depth_list, neighbours_list, entrances, first_entrances, last_entrances
 
-    x = x % n
     first_entrances[x] = len(entrances)
     entrances.append(x)
     for vertex in neighbours_list[x]:
-        vertex_module = vertex % n
-        if vertex_module != parent:
-            dfs(vertex_module, x)
+        if vertex != parent:
+            dfs(vertex, x)
             entrances.append(x)
     last_entrances[x] = len(entrances)
     entrances.append(x)
@@ -48,8 +42,6 @@ def dfs(x, parent=None):
 def find_nearest_ancestor(a, b):
     global entrances, first_entrances, last_entrances, depth_list, n
 
-    a = a % n
-    b = b % n
     if first_entrances[a] > last_entrances[b]:
         b, a = a, b
 
