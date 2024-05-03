@@ -1,23 +1,26 @@
 import queue
+import time
 
 
-def increment(number_list):
+def increment(number_list, target_number_list):
+    # if max(target_number_list) <= number_list[0]:
+    #     return None
     if number_list[0] < 9:
         number_list[0] += 1
         return number_list
-    else:
-        return None
+    return None
 
 
-def decrement(number_list):
+def decrement(number_list, target_number_list):
+    # if min(target_number_list) >= number_list[-1]:
+    #     return None
     if number_list[-1] > 1:
         number_list[-1] -= 1
         return number_list
-    else:
-        return None
+    return None
 
 
-def shift_to_right(number_list):
+def shift_to_right(number_list, target_number_list):
     cur_digit = number_list[0]
     for i in range(1, len(number_list)):
         cur_digit, number_list[i] = number_list[i], cur_digit
@@ -25,10 +28,10 @@ def shift_to_right(number_list):
     return number_list
 
 
-def shift_to_left(number_list):
+def shift_to_left(number_list, target_number_list):
     cur_digit = number_list[-1]
     for i in range(len(number_list) - 2, -1, -1):
-        cur_digit, number_list[i] = number_list[i], number_list[i] + 1
+        cur_digit, number_list[i] = number_list[i], cur_digit
     number_list[-1] = cur_digit
     return number_list
 
@@ -50,7 +53,7 @@ def convert_number(current_number_list, target_number_list):
         for i in range(4):
             prev_number_copy = prev_number[:]
             accrual_rate_copy = accrual_rate[:]
-            cur_number = functions[i](prev_number_copy)
+            cur_number = functions[i](prev_number_copy, target_number_list)
 
             if cur_number:
                 if cur_number == target_number_list:
@@ -79,7 +82,6 @@ def main():
 
 
 main()
-
 
 # def main(initial_number_str, target_number_str):
 #
