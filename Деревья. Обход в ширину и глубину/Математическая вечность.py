@@ -1,83 +1,147 @@
-import queue
-import time
+# import queue
+#
+#
+# def increment(number_list, target_number_list):
+#     # if max(target_number_list) <= number_list[0]:
+#     #     return None
+#     if number_list[0] < 9:
+#         number_list[0] += 1
+#         return number_list
+#     return None
+#
+#
+# def decrement(number_list, target_number_list):
+#     # if min(target_number_list) >= number_list[-1]:
+#     #     return None
+#     if number_list[-1] > 1:
+#         number_list[-1] -= 1
+#         return number_list
+#     return None
+#
+#
+# def shift_to_right(number_list, target_number_list):
+#     cur_digit = number_list[0]
+#     for i in range(1, len(number_list)):
+#         cur_digit, number_list[i] = number_list[i], cur_digit
+#     number_list[0] = cur_digit
+#     return number_list
+#
+#
+# def shift_to_left(number_list, target_number_list):
+#     cur_digit = number_list[-1]
+#     for i in range(len(number_list) - 2, -1, -1):
+#         cur_digit, number_list[i] = number_list[i], cur_digit
+#     number_list[-1] = cur_digit
+#     return number_list
+#
+#
+# def convert_number(current_number_list, target_number_list):
+#     functions = [increment, decrement, shift_to_right, shift_to_left]
+#     counter = 1
+#     number_variants = queue.Queue()
+#     number_variants.put((current_number_list, 0, [current_number_list]))
+#
+#     while True:
+#         prev_number_tuple = number_variants.get()
+#         prev_number = prev_number_tuple[0]
+#         accrual_rate = prev_number_tuple[2]
+#
+#         if prev_number_tuple[1] != counter:
+#             counter += 1
+#
+#         for i in range(4):
+#             prev_number_copy = prev_number[:]
+#             accrual_rate_copy = accrual_rate[:]
+#             cur_number = functions[i](prev_number_copy, target_number_list)
+#
+#             if cur_number:
+#                 if cur_number == target_number_list:
+#                     accrual_rate_copy.append(cur_number)
+#                     return accrual_rate_copy
+#
+#                 accrual_rate_copy.append(cur_number)
+#                 number_variants.put((cur_number, counter + 1, accrual_rate_copy))
+#
+#
+# def main():
+#     initial_number_str = input().strip()
+#     target_number_str = input().strip()
+#
+#     number_digits = len(initial_number_str)
+#     initial_number = [-1] * number_digits
+#     target_number = [-1] * number_digits
+#
+#     for i in range(number_digits):
+#         initial_number[i] = int(initial_number_str[i])
+#         target_number[i] = int(target_number_str[i])
+#
+#     accrual_rate = convert_number(initial_number, target_number)
+#     for num in accrual_rate:
+#         print(''.join(map(str, num)))
+#
+#
+# main()
 
 
-def increment(number_list, target_number_list):
-    # if max(target_number_list) <= number_list[0]:
-    #     return None
-    if number_list[0] < 9:
-        number_list[0] += 1
-        return number_list
+from collections import deque
+
+
+def increment(number_list):
+    number_list_copy = number_list[:]
+    if number_list_copy[0] < 9:
+        number_list_copy[0] += 1
+        return number_list_copy
     return None
 
 
-def decrement(number_list, target_number_list):
-    # if min(target_number_list) >= number_list[-1]:
-    #     return None
-    if number_list[-1] > 1:
-        number_list[-1] -= 1
-        return number_list
+def decrement(number_list):
+    number_list_copy = number_list[:]
+    if number_list_copy[-1] > 1:
+        number_list_copy[-1] -= 1
+        return number_list_copy
     return None
 
 
-def shift_to_right(number_list, target_number_list):
-    cur_digit = number_list[0]
-    for i in range(1, len(number_list)):
-        cur_digit, number_list[i] = number_list[i], cur_digit
-    number_list[0] = cur_digit
-    return number_list
+def shift_to_right(number_list):
+    number_list_copy = number_list[:]
+    return [number_list_copy[-1]] + number_list_copy[:-1]
 
 
-def shift_to_left(number_list, target_number_list):
-    cur_digit = number_list[-1]
-    for i in range(len(number_list) - 2, -1, -1):
-        cur_digit, number_list[i] = number_list[i], cur_digit
-    number_list[-1] = cur_digit
-    return number_list
+def shift_to_left(number_list):
+    number_list_copy = number_list[:]
+    return number_list_copy[1:] + [number_list_copy[0]]
 
 
-def convert_number(current_number_list, target_number_list):
+def convert_number(initial_number_list, target_number_list):
+    visited = set()
+    queue = deque([(initial_number_list, [])])
     functions = [increment, decrement, shift_to_right, shift_to_left]
-    counter = 1
-    number_variants = queue.Queue()
-    number_variants.put((current_number_list, 0, [current_number_list]))
 
-    while True:
-        prev_number_tuple = number_variants.get()
-        prev_number = prev_number_tuple[0]
-        accrual_rate = prev_number_tuple[2]
+    while queue:
+        current_number_list, path = queue.popleft()
+        if tuple(current_number_list) in visited:
+            continue
+        visited.add(tuple(current_number_list))
 
-        if prev_number_tuple[1] != counter:
-            counter += 1
+        if current_number_list == target_number_list:
+            return path + [current_number_list]
 
-        for i in range(4):
-            prev_number_copy = prev_number[:]
-            accrual_rate_copy = accrual_rate[:]
-            cur_number = functions[i](prev_number_copy, target_number_list)
+        for func in functions:
+            number_list = func(current_number_list)
 
-            if cur_number:
-                if cur_number == target_number_list:
-                    accrual_rate_copy.append(cur_number)
-                    return accrual_rate_copy
-
-                accrual_rate_copy.append(cur_number)
-                number_variants.put((cur_number, counter + 1, accrual_rate_copy))
+            if number_list:
+                queue.append((number_list, path + [current_number_list]))
 
 
 def main():
     initial_number_str = input().strip()
     target_number_str = input().strip()
 
-    number_digits = len(initial_number_str)
-    initial_number = [-1] * number_digits
-    target_number = [-1] * number_digits
+    initial_number = list(map(int, initial_number_str))
+    target_number = list(map(int, target_number_str))
 
-    for i in range(number_digits):
-        initial_number[i] = int(initial_number_str[i])
-        target_number[i] = int(target_number_str[i])
-
-    accrual_rate = convert_number(initial_number, target_number)
-    for num in accrual_rate:
+    path = convert_number(initial_number, target_number)
+    for num in path:
         print(''.join(map(str, num)))
 
 
