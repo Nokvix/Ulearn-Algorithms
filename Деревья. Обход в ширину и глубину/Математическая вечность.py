@@ -1,87 +1,7 @@
-# from collections import deque
-# 
-# 
-# def increment(number_list, target_max_digit, target_min_digit):
-#     if number_list[0] < 9:
-#         if target_max_digit <= number_list[0]:
-#             return None
-#         number_list_copy = number_list[:]
-#         number_list_copy[0] += 1
-#         return number_list_copy
-#     return None
-# 
-# 
-# def decrement(number_list, target_max_digit, target_min_digit):
-#     if number_list[-1] > 1:
-#         if target_min_digit >= number_list[-1]:
-#             return None
-#         number_list_copy = number_list[:]
-#         number_list_copy[-1] -= 1
-#         return number_list_copy
-#     return None
-# 
-# 
-# def shift_to_right(number_list, *args):
-#     number_list_copy = number_list[:]
-#     return [number_list_copy[-1]] + number_list_copy[:-1]
-# 
-# 
-# def shift_to_left(number_list, *args):
-#     number_list_copy = number_list[:]
-#     return number_list_copy[1:] + [number_list_copy[0]]
-# 
-# 
-# def convert_number(initial_number_list, target_number_list):
-#     visited = set()
-#     queue = deque([(initial_number_list, [])])
-#     functions = [increment, decrement, shift_to_right, shift_to_left]
-#     functions_length = len(functions)
-#     target_max_digit = max(target_number_list)
-#     target_min_digit = min(target_number_list)
-# 
-#     while queue:
-#         current_number, commands = queue.popleft()
-#         if tuple(current_number) in visited:
-#             continue
-#         visited.add(tuple(current_number))
-# 
-#         if current_number == target_number_list:
-#             return commands
-# 
-#         for i in range(functions_length):
-#             number_list = functions[i](current_number, target_max_digit, target_min_digit)
-# 
-#             if number_list:
-#                 queue.append((number_list, commands + [i]))
-# 
-# 
-# def main():
-#     initial_number = input().strip()
-#     target_number = input().strip()
-# 
-#     initial_number = list(map(int, initial_number))
-#     target_number = list(map(int, target_number))
-# 
-#     commands = convert_number(initial_number, target_number)
-#     functions = [increment, decrement, shift_to_right, shift_to_left]
-#     print(initial_number)
-#     current_number = initial_number
-#     for command in commands:
-#         current_number = functions[command](current_number, 10, 0)
-#         print(''.join(map(str, current_number)))
-# 
-# 
-# main()
-
-
 from collections import deque
 
-max_target_digit = 0
-min_target_digit = 10
 
-
-def increment(number):
-    global max_target_digit
+def increment(number, max_target_digit):
 
     digit = int(number[0])
     if digit < 9:
@@ -92,8 +12,7 @@ def increment(number):
     return None
 
 
-def decrement(number):
-    global min_target_digit
+def decrement(number, min_target_digit):
 
     digit = int(number[-1])
     if digit > 1:
@@ -114,34 +33,40 @@ def shift_to_left(number):
     return new_number
 
 
-def convert_number(initial_number, target_number):
+def convert_number(initial_number, target_number, max_target_digit, min_target_digit):
     visited = set()
-    queue = deque([(initial_number, [])])
-    functions = [increment, decrement, shift_to_right, shift_to_left]
-    functions_length = len(functions)
+    visited.add(initial_number)
+    queue = deque([(initial_number, '')])
 
     while queue:
         current_number, commands = queue.popleft()
-        if current_number in visited:
-            continue
-        visited.add(current_number)
 
-        if current_number == target_number:
-            return commands
-
-        for i in range(functions_length):
-            number = functions[i](current_number)
+        for i in range(4):
+            number = None
+            match i:
+                case 0:
+                    number = increment(current_number, max_target_digit)
+                case 1:
+                    number = decrement(current_number, min_target_digit)
+                case 2:
+                    number = shift_to_right(current_number)
+                case 3:
+                    number = shift_to_left(current_number)
 
             if number:
-                queue.append((number, commands + [i]))
+                if number == target_number:
+                    return commands + str(i)
+                if number not in visited:
+                    visited.add(number)
+                    queue.append((number, commands + str(i)))
 
 
 def main():
-    global max_target_digit, min_target_digit
-
     initial_number = input().strip()
     target_number = input().strip()
 
+    max_target_digit = 0
+    min_target_digit = 10
     for digit in target_number:
         digit = int(digit)
         if digit > max_target_digit:
@@ -149,16 +74,24 @@ def main():
         if digit < min_target_digit:
             min_target_digit = digit
 
-    commands = convert_number(initial_number, target_number)
-    functions = [increment, decrement, shift_to_right, shift_to_left]
+    commands = convert_number(initial_number, target_number, max_target_digit, min_target_digit)
     print(initial_number)
     current_number = initial_number
     for command in commands:
-        current_number = functions[command](current_number)
+        match command:
+            case '0':
+                current_number = increment(current_number, max_target_digit)
+            case '1':
+                current_number = decrement(current_number, min_target_digit)
+            case '2':
+                current_number = shift_to_right(current_number)
+            case '3':
+                current_number = shift_to_left(current_number)
         print(current_number)
 
 
 main()
+
 
 # def main(initial_number, target_number):
 #
