@@ -35,31 +35,48 @@ def shift_to_left(number, length_number):
 
 
 def convert_number(initial_number, target_number, max_target_digit, min_target_digit, length_number):
-    visited = set()
-    visited.add(initial_number)
-    queue = deque([(initial_number, '')])
+    # visited = set()
+    # visited.add(initial_number)
+    # queue = deque([(initial_number, '')])
+    # queue = deque([(initial_number, [])])
+    queue = deque([initial_number])
+    elements = dict()
+    elements[initial_number] = None
 
     while queue:
-        current_number, commands = queue.popleft()
+        # current_number, numbers = queue.popleft()
+        current_number = queue.popleft()
 
         for i in range(4):
             number = None
             match i:
                 case 0:
-                    number = increment(current_number, max_target_digit, length_number)
+                    if current_number < target_number:
+                        number = increment(current_number, max_target_digit, length_number)
                 case 1:
                     number = decrement(current_number, min_target_digit)
                 case 2:
+                    # if len(numbers) > 0 and numbers[-1] == '3':
+                    #     continue
                     number = shift_to_right(current_number, length_number)
                 case 3:
+                    # if len(numbers) > 0 and numbers[-1] == '2':
+                    #     continue
                     number = shift_to_left(current_number, length_number)
 
             if number:
+
                 if number == target_number:
-                    return commands + str(i)
-                if number not in visited:
-                    visited.add(number)
-                    queue.append((number, commands + str(i)))
+                    # return commands + str(i)
+                    # return numbers + [number]
+                    elements[number] = current_number
+                    return elements
+                if number not in elements:
+                    elements[number] = current_number
+                    # visited.add(number)
+                    # queue.append((number, commands + str(i)))
+                    # queue.append((number, numbers + [number]))
+                    queue.append(number)
 
 
 def main():
@@ -77,21 +94,34 @@ def main():
             min_target_digit = digit
 
     initial_number, target_number = int(initial_number), int(target_number)
-    commands = convert_number(initial_number, target_number, max_target_digit, min_target_digit, length_number)
+    # commands = convert_number(initial_number, target_number, max_target_digit, min_target_digit, length_number)
+    numbers = convert_number(initial_number, target_number, max_target_digit, min_target_digit, length_number)
 
-    print(initial_number)
-    current_number = initial_number
-    for command in commands:
-        match command:
-            case '0':
-                current_number = increment(current_number, max_target_digit, length_number)
-            case '1':
-                current_number = decrement(current_number, min_target_digit)
-            case '2':
-                current_number = shift_to_right(current_number, length_number)
-            case '3':
-                current_number = shift_to_left(current_number, length_number)
-        print(current_number)
+    # print(initial_number)
+    # current_number = initial_number
+    # for command in commands:
+    #     match command:
+    #         case '0':
+    #             current_number = increment(current_number, max_target_digit, length_number)
+    #         case '1':
+    #             current_number = decrement(current_number, min_target_digit)
+    #         case '2':
+    #             current_number = shift_to_right(current_number, length_number)
+    #         case '3':
+    #             current_number = shift_to_left(current_number, length_number)
+    #     print(current_number)
+    # for number in numbers:
+    #     print(number)
+
+    result = []
+    cur_number = target_number
+    while cur_number:
+        result.append(cur_number)
+        cur_number = numbers[cur_number]
+
+    result.reverse()
+    for number in result:
+        print(number)
 
 
 main()
