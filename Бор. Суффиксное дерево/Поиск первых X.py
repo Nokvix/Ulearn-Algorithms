@@ -1,26 +1,24 @@
 class Node:
     def __init__(self):
         self.is_end = False
-        self.child = [None] * 256
-
-    def get_or_create_node(self, index):
-        if not self.child[index]:
-            self.child[index] = Node()
-
-        return self.child[index]
+        self.child = dict()
 
 
 class Trie:
     def __init__(self):
         self.root = Node()
         self.counter = 0
+        self.is_empty = True
 
     def add(self, string):
         current_node = self.root
         for symbol in string:
-            current_node = current_node.get_or_create_node(ord(symbol))
+            if symbol not in current_node.child:
+                current_node.child[symbol] = Node()
+            current_node = current_node.child[symbol]
 
         current_node.is_end = True
+        self.is_empty = False
 
     def _get(self, count, current_list, node, prefix, result):
         if node is None:
@@ -31,29 +29,29 @@ class Trie:
             if self.counter == count:
                 return
 
-        child = node.child
-        for i in range(len(child)):
+        for symbol in sorted(node.child.keys()):
             if self.counter == count:
                 return
-            if child[i]:
-                self._get(count, current_list + [chr(i)], child[i], prefix, result)
+            if node.child[symbol]:
+                self._get(count, current_list + [symbol], node.child[symbol], prefix, result)
+
+        if len(result) == 0:
+            result.append('empty')
 
     def get(self, prefix, count):
+        self.counter = 0
         current_list = []
         node = self.root
         result = []
         for symbol in prefix:
-            if node is None:
+            if node is None or self.is_empty or symbol not in node.child:
                 result.append('empty')
                 return result
 
-            node = node.child[ord(symbol)]
+            node = node.child[symbol]
             current_list.append(symbol)
 
         self._get(count, current_list, node, prefix, result)
-
-        if self.counter == count:
-            self.counter = 0
 
         return result
 
