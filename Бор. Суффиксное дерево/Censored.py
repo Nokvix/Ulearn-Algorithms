@@ -20,7 +20,7 @@ class Trie:
             for j in range(i, string_length):
                 if string[j] not in current_node.child:
                     current_node.child[string[j]] = Node()
-                current_node.assign_coordinates(row_number, j + 1)
+                    current_node.assign_coordinates(row_number, j)
                 current_node = current_node.child[string[j]]
             current_node.assign_coordinates(row_number, string_length)
 
@@ -28,7 +28,7 @@ class Trie:
         if node is None:
             return None
         if len(current_list) == len(prefix) and prefix == ''.join(current_list):
-            return current_list_node[-1].row_number, current_list_node[-1].column_number - len(current_list)
+            return current_list_node[-1].row_number, current_list_node[-1].column_number - len(current_list) + 1
 
         for symbol in sorted(node.child.keys()):
             if node.child[symbol]:
